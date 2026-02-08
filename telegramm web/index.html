@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Disciplina Pro | Трекер привычек</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка приложения -->
+        <header class="app-header">
+            <div class="user-info">
+                <div class="avatar" id="user-avatar">👤</div>
+                <div class="user-details">
+                    <h1 id="username">Дисциплина Pro</h1>
+                    <div class="streak">
+                        <i class="fas fa-fire"></i>
+                        <span id="streak-count">0 дней подряд</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-today">
+                <div class="stat">
+                    <div class="stat-value" id="today-completed">0</div>
+                    <div class="stat-label">выполнено</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="today-total">0</div>
+                    <div class="stat-label">всего задач</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Вкладки -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="habits">
+                <i class="fas fa-tasks"></i> Привычки
+            </button>
+            <button class="tab" data-tab="pomodoro">
+                <i class="fas fa-clock"></i> Pomodoro
+            </button>
+            <button class="tab" data-tab="goals">
+                <i class="fas fa-bullseye"></i> Цели
+            </button>
+            <button class="tab" data-tab="stats">
+                <i class="fas fa-chart-line"></i> Статистика
+            </button>
+        </nav>
+
+        <!-- Контент вкладок -->
+        <main class="content">
+            <!-- Вкладка Привычки -->
+            <section id="habits-tab" class="tab-content active">
+                <div class="section-header">
+                    <h2>Мои привычки сегодня</h2>
+                    <button class="btn-icon" id="add-habit">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                <div class="habits-list" id="habits-list">
+                    <!-- Привычки будут добавляться через JS -->
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list fa-2x"></i>
+                        <p>У вас пока нет привычек</p>
+                        <button class="btn-primary" id="add-first-habit">
+                            Добавить первую привычку
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="daily-quote">
+                    <i class="fas fa-quote-left"></i>
+                    <p id="quote-text">Дисциплина — это выбор между тем, чего ты хочешь сейчас, и тем, чего ты хочешь больше всего.</p>
+                </div>
+            </section>
+
+            <!-- Вкладка Pomodoro -->
+            <section id="pomodoro-tab" class="tab-content">
+                <div class="pomodoro-container">
+                    <div class="pomodoro-timer">
+                        <div class="timer-display" id="timer-display">25:00</div>
+                        <div class="timer-label" id="timer-label">Фокус-сессия</div>
+                    </div>
+                    
+                    <div class="pomodoro-controls">
+                        <button class="btn-circle btn-large" id="start-timer">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn-circle" id="pause-timer" disabled>
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button class="btn-circle" id="reset-timer">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="pomodoro-settings">
+                        <div class="setting">
+                            <label>Фокус (мин)</label>
+                            <input type="number" id="focus-time" min="5" max="60" value="25">
+                        </div>
+                        <div class="setting">
+                            <label>Перерыв (мин)</label>
+                            <input type="number" id="break-time" min="1" max="30" value="5">
+                        </div>
+                        <div class="setting">
+                            <label>Сессии</label>
+                            <div class="session-counter">
+                                <button class="btn-small" id="decrease-sessions">-</button>
+                                <span id="session-count">4</span>
+                                <button class="btn-small" id="increase-sessions">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pomodoro-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="session-progress"></div>
+                        </div>
+                        <div class="progress-text">
+                            Сессия: <span id="current-session">1</span>/<span id="total-sessions">4</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка Цели -->
+            <section id="goals-tab" class="tab-content">
+                <div class="goals-container">
+                    <h2>Мои цели на эту неделю</h2>
+                    <div class="goals-list" id="goals-list">
+                        <!-- Цели будут через JS -->
+                    </div>
+                    <button class="btn-primary" id="add-goal">
+                        <i class="fas fa-plus"></i> Новая цель
+                    </button>
+                </div>
+            </section>
+
+            <!-- Вкладка Статистика -->
+            <section id="stats-tab" class="tab-content">
+                <div class="stats-container">
+                    <h2>Ваша продуктивность</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--tg-theme-button-color, #50a8eb);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-card-value" id="week-completion">0%</div>
+                            <div class="stat-card-label">Выполнение за неделю</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--tg-theme-link-color, #3390ec);">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="stat-card-value" id="current-streak">0</div>
+                            <div class="stat-card-label">Дней подряд</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="productivity-chart"></canvas>
+                    </div>
+                    
+                    <div class="achievements">
+                        <h3>Достижения</h3>
+                        <div class="achievements-list" id="achievements-list">
+                            <!-- Достижения будут через JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Нижняя панель действий -->
+        <footer class="action-footer">
+            <button class="btn-action" id="quick-task">
+                <i class="fas fa-plus-circle"></i>
+                <span>Быстрая задача</span>
+            </button>
+            <button class="btn-action" id="motivation">
+                <i class="fas fa-bolt"></i>
+                <span>Мотивация</span>
+            </button>
+        </footer>
+    </div>
+
+    <!-- Модальное окно для новой привычки -->
+    <div class="modal" id="habit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Новая привычка</h3>
+                <button class="btn-close" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="habit-name" placeholder="Например: Утренняя зарядка" maxlength="50">
+                <div class="habit-frequency">
+                    <h4>Повторять:</h4>
+                    <div class="frequency-options">
+                        <label class="frequency-option">
+                            <input type="radio" name="frequency" value="daily" checked>
+                            <span>Ежедневно</span>
+                        </label>
+                        <label class="frequency-option">
+                            <input type="radio" name="frequency" value="weekdays">
+                            <span>По будням</span>
+                        </label>
+                        <label class="frequency-option">
+                            <input type="radio" name="frequency" value="weekly">
+                            <span>Раз в неделю</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="habit-time">
+                    <h4>Лучшее время (опционально):</h4>
+                    <input type="time" id="habit-time-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancel-habit">Отмена</button>
+                <button class="btn-primary" id="save-habit">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
